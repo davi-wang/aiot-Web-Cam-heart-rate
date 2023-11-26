@@ -1,2 +1,2 @@
 # aiot
-Using web-cam to heart-rate
+Using web-cam to detect heart-rate
