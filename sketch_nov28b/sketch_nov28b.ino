@@ -24,7 +24,7 @@
 
 #define ESP32CAM_PUBLISH_TOPIC   "camera/image"
 
-const char* mqtt_server = "8.134.199.5";
+const char* mqtt_server = "18.163.181.228";
 const int mqtt_port = 1883;
 const char* mqtt_user = "admin"; // 如果需要用户名和密码认证
 const char* mqtt_password = "HKUaiot7310";
@@ -99,14 +99,14 @@ void cameraInit(){
   config.pin_sccb_scl = SIOC_GPIO_NUM;
   config.pin_pwdn = PWDN_GPIO_NUM;
   config.pin_reset = RESET_GPIO_NUM;
-  config.xclk_freq_hz = 40000000;
+  config.xclk_freq_hz = 40000000;;
   config.frame_size = FRAMESIZE_QVGA;
   config.pixel_format = PIXFORMAT_JPEG; // for streaming
   //config.pixel_format = PIXFORMAT_RGB565; // for face detection/recognition
-  config.grab_mode = CAMERA_GRAB_WHEN_EMPTY;
-  config.fb_location = CAMERA_FB_IN_PSRAM;
-  config.jpeg_quality = 2;
-  config.fb_count = 0.5;
+  // config.grab_mode = CAMERA_GRAB_LATEST ;
+  // config.fb_location = CAMERA_FB_IN_PSRAM;
+  config.jpeg_quality = 10;
+  config.fb_count = 1;
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
     Serial.printf("Camera init failed with error 0x%x", err);
@@ -114,22 +114,31 @@ void cameraInit(){
     return;
   }
 }
-
+unsigned long start_time;
+unsigned long end_time;
 void grabImage(){
   camera_fb_t * fb = esp_camera_fb_get();
+
   if(fb != NULL && fb->format == PIXFORMAT_JPEG && fb->len < bufferSize){
     Serial.print("Image Length: ");
     Serial.print(fb->len);
     Serial.print("\t Publish Image: ");
-    bool result = client.publish(ESP32CAM_PUBLISH_TOPIC, (const char*)fb->buf, fb->len);
-    Serial.println(result);
+    start_time = millis();
 
+    // int message = 1;
+
+    // bool result = (client.publish(mqtt_topic, String(message).c_str()));
+    bool result = client.publish(ESP32CAM_PUBLISH_TOPIC, (const char*)fb->buf, fb->len);
+    end_time = millis();
+    Serial.println(result);
+    Serial.print("Delay : ");
+    Serial.println(end_time-start_time);
     if(!result){
       ESP.restart();
     }
   }
   esp_camera_fb_return(fb);
-  delay(1);
+  // delay(1);
 }
 
 void setup() {
