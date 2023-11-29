@@ -56,25 +56,29 @@ class RPPG(QObject):
         self.output_filename = None
 
     def _set_camera(self, camera):
-        self._cam = camera or Camera(video=0, parent=self)
+        self._cam = camera or Camera(parent=self)
         self._cam.frame_received.connect(self.on_frame_received)
 
     def add_processor(self, processor):
         self._processors.append(processor)
 
     def on_frame_received(self, frame):
-        self.roi = self._roi_detector(frame)
 
-        for processor in self._processors:
-            processor(self.roi)
+        try: 
+            self.roi = self._roi_detector(frame)
 
-        if self.hr_calculator is not None:
-            self.hr_calculator.update(self)
+            for processor in self._processors:
+                processor(self.roi)
 
-        dt = self._update_time()
-        self.rppg_updated.emit(RppgResults(dt=dt, rawimg=frame, roi=self.roi,
-                                           hr=np.nan, vs_iter=self.get_vs,
-                                           ts=self.get_ts, fps=self.get_fps()))
+            if self.hr_calculator is not None:
+                self.hr_calculator.update(self)
+
+            dt = self._update_time()
+            self.rppg_updated.emit(RppgResults(dt=dt, rawimg=frame, roi=self.roi,
+                                            hr=np.nan, vs_iter=self.get_vs,
+                                            ts=self.get_ts, fps=self.get_fps()))
+        except Exception as e:
+            print("Error processing image:", str(e))        
 
     def _update_time(self):
         dt = time.perf_counter()- self.last_update

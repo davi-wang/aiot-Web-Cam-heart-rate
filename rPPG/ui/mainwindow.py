@@ -88,6 +88,7 @@ class MainWindow(QMainWindow):
         self.hr_label.setText("Heart rate: {:5.1f} beat/min".format(hr))
 
     def on_rppg_updated(self, results):
+
         ts = results.ts(self.graphwin)
         for pi, vs in enumerate(results.vs_iter(self.graphwin)):
             self.lines[pi].setData(x=ts, y=vs)

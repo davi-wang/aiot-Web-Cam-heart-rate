@@ -32,7 +32,7 @@ def main():
         digital_bandpass = get_butterworth_filter(30, cutoff, "bandpass")
         processor = FilteredProcessor(processor, digital_bandpass)
 
-    cam = Camera(video=args.video, limit_fps=get_delay(args))
+    cam = Camera()
     rppg = RPPG(roi_detector=roi_detector,
                 camera=cam,
                 hr_calculator=hr_calc,
