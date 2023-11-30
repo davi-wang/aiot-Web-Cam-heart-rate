@@ -7,6 +7,7 @@ import paho.mqtt.client as mqtt
 import io
 from PIL import Image
 import numpy as np
+import base64
 
 class Camera(QThread):
     """Wraps cv2.VideoCapture and emits Qt signals with frames in RGB format.
@@ -28,7 +29,7 @@ class Camera(QThread):
         """
 
         QThread.__init__(self, parent=parent)
-        mqtt_server = "8.134.199.5"
+        mqtt_server = "127.0.0.1"
         mqtt_port = 1883
         mqtt_user = "admin"
         mqtt_password = "HKUaiot7310"
@@ -43,9 +44,10 @@ class Camera(QThread):
                 # 解析收到的图像数据
                 
                 image_data = message.payload
+                image_data  = base64.b64decode(image_data )
                 image = Image.open(io.BytesIO(image_data))
                 self.frame_received.emit(np.array(image))
-                image.save("received_image.jpg")
+                # image.save("received_image.jpg")
 
             except Exception as e:
                 print("Error processing image:", str(e))
