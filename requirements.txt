@@ -5,3 +5,5 @@ pandas
 PyQt5
 pyqtgraph
 scipy
+paho-mqtt
+protobuf
