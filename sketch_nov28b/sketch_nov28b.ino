@@ -24,13 +24,13 @@
 
 #define ESP32CAM_PUBLISH_TOPIC   "camera/image"
 
-const char* mqtt_server = "18.163.181.228";
+const char* mqtt_server = "192.168.137.1";
 const int mqtt_port = 1883;
 const char* mqtt_user = "admin"; // 如果需要用户名和密码认证
-const char* mqtt_password = "HKUaiot7310";
+const char* mqtt_password = "admin123";
 const char* mqtt_topic = "camera/image"; // MQTT主题
 const int bufferSize = 1024 * 23; // 23552 bytes
-const char* ssid = "CAI";
+const char* ssid = "7947";
 const char* password = "12345678";
 WiFiClient net= WiFiClient();
 MQTTClient client = MQTTClient(bufferSize);
