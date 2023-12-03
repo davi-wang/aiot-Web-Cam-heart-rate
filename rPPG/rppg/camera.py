@@ -1,5 +1,9 @@
 import time
 
+import scipy.io as sio
+import numpy as np
+import matplotlib.pyplot as plt
+
 import cv2
 import numpy as np
 from PyQt5.QtCore import QThread, pyqtSignal
@@ -19,7 +23,7 @@ class Camera(QThread):
 
     frame_received = pyqtSignal(np.ndarray)
 
-    def __init__(self, parent=None):
+    def __init__(self,video, parent=None):
         """Initialize Camera instance
 
         Args:
@@ -29,14 +33,13 @@ class Camera(QThread):
         """
 
         QThread.__init__(self, parent=parent)
-        mqtt_server = "127.0.0.1"
-        mqtt_port = 1883
-        mqtt_user = "admin"
-        mqtt_password = "admin123"
-        mqtt_topic = "camera/image"
+        self._cap = cv2.VideoCapture(video)
+        self._running = False
+        limit_fps = 30
+        self._delay = 1 / limit_fps - 0.012 if limit_fps else np.nan
 
-        self.client = mqtt.Client()
-        self.client.username_pw_set(mqtt_user, mqtt_password)
+        #self.client = mqtt.Client()
+        #self.client.username_pw_set(mqtt_user, mqtt_password)
         
         def on_message(client, userdata, message):
 
@@ -52,33 +55,22 @@ class Camera(QThread):
             except Exception as e:
                 print("Error processing image:", str(e))
 
-        self.client.on_message = on_message    
-
-        # 连接到MQTT服务器
-        self.client.connect(mqtt_server, mqtt_port, keepalive=60)
-
-        # 订阅MQTT主题
-        self.client.subscribe(mqtt_topic, qos=0)
-        self._running = False
 
 
     def run(self):
-        # 开始监听MQTT消息
         self._running = True
-        self.client.loop_forever()
-        
-        # while self._running:
-        #     ret, frame = self._cap.read()
-        #     last_time = time.perf_counter()
+        while self._running:
+            ret, frame = self._cap.read()
+            last_time = time.perf_counter()
 
-        #     if not ret:
-        #         self._running = False
-        #         raise RuntimeError("No frame received")
-        #     else:
-        #         self.frame_received.emit(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+            if not ret:
+                self._running = False
+                raise RuntimeError("No frame received")
+            else:
+                self.frame_received.emit(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
 
-        #     while (time.perf_counter() - last_time) < self._delay:
-        #         time.sleep(0.001)
+            while (time.perf_counter() - last_time) < self._delay:
+                time.sleep(0.001)
 
     def stop(self):
         self._running = False

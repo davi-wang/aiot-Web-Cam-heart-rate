@@ -50,6 +50,7 @@ class MainWindow(QMainWindow):
         p1.hideAxis("bottom")
         self.lines.append(p1.plot(pen=pg.mkPen("k", width=3)))
         self.plots.append(p1)
+        self.count = 0
 
         if self.rppg.num_processors > 1:
             p2 = layout.addPlot(row=1, col=1, colspan=1)
@@ -86,6 +87,11 @@ class MainWindow(QMainWindow):
 
     def update_hr(self, hr):
         self.hr_label.setText("Heart rate: {:5.1f} beat/min".format(hr))
+        #self.count += 1
+        #print("count " + str(self.count) + "   hr " + str(hr))
+        #with open('./mmpd/result/p6_0.txt', 'a') as file:
+        #    file.write(f"{hr}\n")
+
 
     def on_rppg_updated(self, results):
 

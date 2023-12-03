@@ -46,7 +46,7 @@ class RPPG(QObject):
 
         self._dts = []
         self.last_update = time.perf_counter()
-        
+
         self.hr_calculator = hr_calculator
         if self.hr_calculator is not None:
             self.new_hr = self.hr_calculator.new_hr
