@@ -36,7 +36,7 @@ class Camera(QThread):
         self._cap = cv2.VideoCapture(video)
         self._running = False
         limit_fps = 30
-        self._delay = 1 / limit_fps - 0.012 if limit_fps else np.nan
+        self._delay = 1.0 / limit_fps * 1000.0
 
         #self.client = mqtt.Client()
         #self.client.username_pw_set(mqtt_user, mqtt_password)
@@ -61,7 +61,7 @@ class Camera(QThread):
         self._running = True
         while self._running:
             ret, frame = self._cap.read()
-            last_time = time.perf_counter()
+            last_time = time.perf_counter()*1000
 
             if not ret:
                 self._running = False
@@ -69,7 +69,7 @@ class Camera(QThread):
             else:
                 self.frame_received.emit(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
 
-            while (time.perf_counter() - last_time) < self._delay:
+            while (time.perf_counter()*1000 - last_time) < self._delay:
                 time.sleep(0.001)
 
     def stop(self):

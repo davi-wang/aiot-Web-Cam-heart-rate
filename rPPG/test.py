@@ -36,7 +36,7 @@ def test():
         digital_bandpass = get_butterworth_filter(30, cutoff, "bandpass")
         processor = FilteredProcessor(processor, digital_bandpass)
 
-    cam = Camera(video='./mmpd/video/p6_0.mat.avi')
+    cam = Camera(video='./mmpd/video/p29_4.mat.avi')
     rppg = RPPG(roi_detector=roi_detector,
                 camera=cam,
                 hr_calculator=hr_calc,
