@@ -42,6 +42,7 @@ for filename in os.listdir(dir_path):
     # Check if the file is a regular file (not a directory)
     if os.path.isfile(os.path.join(dir_path, filename)):
         # Do something with the file
+        sample_file = sio.loadmat('./mmpd/' + filename)
         print(filename)
         video = sample_file['video']
         video = (video * 255).astype(np.uint8)
